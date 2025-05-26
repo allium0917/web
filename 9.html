@@ -243,134 +243,210 @@
   </div>
 
   <script>
-    const chaptersData = [
-      ["넌 네가 길들인 것에 대해 언제까지나 책임을 져야 해."
-      ],
+const chaptersData = [
+  ["넌 네가 길들인 것에 대해 언제까지나 책임을 져야 해."],
 
-      ["모든 어른들은 한때 어린이였다.<br> 그러나 그것을 기억하는 어른은 별로 없다.",
-        "-어린왕자"
-      ],
+  ["모든 어른들은 한때 어린이였다.<br> 그러나 그것을 기억하는 어른은 별로 없다.",
+   "-어린왕자"],
 
-      ["너는 나에게 이 세상에 단 하나뿐인 존재가 되는 거고, 나도 너에게 세상에 하나뿐인 존재가 되는 거야.",
-        "넌 네가 길들인 것에 대해 언제까지나 책임이 있어.",
-        "-사막여우"
-      ],
+  ["너는 나에게 이 세상에 단 하나뿐인 존재가 되는 거고, 나도 너에게 세상에 하나뿐인 존재가 되는 거야.",
+   "넌 네가 길들인 것에 대해 언제까지나 책임이 있어.",
+   "-사막여우"],
 
-      ["별들은 아름다워. 보이지 않는 한 송이 꽃 때문에.",
-      "사막이 아름다운 것은 어딘가에 샘을 감추고 있기 때문이야.",
-      "-어린왕자"
-  ],
-    ];
+  ["별들은 아름다워. 보이지 않는 한 송이 꽃 때문에.",
+   "사막이 아름다운 것은 어딘가에 샘을 감추고 있기 때문이야.",
+   "-어린왕자"],
+];
 
-    const bookContainer = document.getElementById('bookContainer');
-    const sentinel = document.getElementById('sentinel');
-    const bookmarkList = document.getElementById('bookmarkList');
-    let chapterCount = 1;
-    let loading = false;
+const bookContainer = document.getElementById('bookContainer');
+const sentinel = document.getElementById('sentinel');
+const bookmarkList = document.getElementById('bookmarkList');
 
-    const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && !loading) {
-        loadNextChapter();
+let chapterCount = 1; // 현재 로드된 챕터 수
+let loading = false;
+let waitingForUserInput = false; // 빈 입력 챕터가 활성화 되어있는지 여부
+
+const observer = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting && !loading && !waitingForUserInput) {
+    loadNextChapter();
+  }
+}, {
+  root: bookContainer,
+  threshold: 0.5
+});
+
+observer.observe(sentinel);
+
+function loadNextChapter() {
+  loading = true;
+
+  // 기존 데이터 챕터 자동 로드
+  if (chapterCount <= chaptersData.length) {
+    setTimeout(() => {
+      const chapter = document.createElement('div');
+      chapter.classList.add('chapter');
+      chapter.id = `chapter-${chapterCount}`;
+      chapter.setAttribute('tabindex', '-1');
+
+      chapter.innerHTML = `
+        <button class="bookmark-button" data-id="${chapterCount}" aria-label="챕터 ${chapterCount} 북마크 추가">북마크</button>
+        <p><strong>Chapter ${chapterCount}</strong></p>
+        ${chaptersData[chapterCount - 1].map(p => `<p>${p}</p>`).join("")}
+      `;
+
+      bookContainer.insertBefore(chapter, sentinel);
+      setTimeout(() => chapter.classList.add('visible'), 50);
+
+      chapterCount++;
+      loading = false;
+
+      attachBookmarkEvents();
+    }, 700);
+  } else {
+    // 마지막 챕터 이후에는 빈 입력 챕터 생성
+    createEditableChapter();
+    loading = false;
+  }
+}
+
+// 빈 입력 가능한 챕터 생성 함수
+function createEditableChapter() {
+  if (waitingForUserInput) return; // 이미 입력 대기 중이면 중복 생성 방지
+
+  waitingForUserInput = true;
+  const chapter = document.createElement('div');
+  chapter.classList.add('chapter');
+  chapter.id = `chapter-${chapterCount}`;
+  chapter.setAttribute('tabindex', '-1');
+
+  chapter.innerHTML = `
+    <button class="bookmark-button" data-id="${chapterCount}" aria-label="챕터 ${chapterCount} 북마크 추가">북마크</button>
+    <p><strong>Chapter ${chapterCount}</strong></p>
+    <div contenteditable="true" 
+      style="
+        min-height: 120px; 
+        padding: 14px; 
+        background: #fff8f1; 
+        border: 1px dashed #a1866f; 
+        border-radius: 10px;
+        color: #5b3c2b;
+        font-size: 17px;
+        line-height: 1.8;
+        outline: none;
+      "
+      aria-label="새 챕터 내용 입력"
+      spellcheck="true"
+      ></div>
+  `;
+
+  bookContainer.insertBefore(chapter, sentinel);
+  setTimeout(() => chapter.classList.add('visible'), 50);
+
+  attachBookmarkEvents();
+
+  const editableDiv = chapter.querySelector('div[contenteditable]');
+  editableDiv.focus();
+
+  // Enter 키 이벤트 (Shift+Enter는 줄바꿈)
+  editableDiv.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      const text = editableDiv.innerText.trim();
+      if (text.length === 0) {
+        alert("내용을 입력해 주세요.");
+        return;
       }
-    }, {
-      root: bookContainer,
-      threshold: 0.5
-    });
+      // 입력 완료 처리
+      finalizeEditableChapter(chapter, text);
+    }
+  });
+}
 
-    observer.observe(sentinel);
+// 입력 완료 후 처리
+function finalizeEditableChapter(chapter, text) {
+  waitingForUserInput = false;
 
-    function loadNextChapter() {
-      if (chapterCount >= chaptersData.length + 1) {
-        sentinel.innerHTML = "<p>📘 더 이상 페이지가 없습니다.</p>";
-        observer.unobserve(sentinel);
+  // contenteditable div를 일반 <p> 태그들로 변환
+  const paragraphs = text.split(/\n+/).map(line => line.trim()).filter(line => line.length > 0);
+  const contentHTML = paragraphs.map(p => `<p>${p}</p>`).join("");
+
+  const editableDiv = chapter.querySelector('div[contenteditable]');
+  editableDiv.remove();
+
+  const newContent = document.createElement('div');
+  newContent.innerHTML = contentHTML;
+  chapter.appendChild(newContent);
+
+  chapterCount++;
+
+  // 다음 챕터가 필요하면 observer가 감지하도록 sentinel 다시 관찰
+  observer.observe(sentinel);
+}
+
+// 북마크 버튼 이벤트 연결
+function attachBookmarkEvents() {
+  document.querySelectorAll('.bookmark-button').forEach(button => {
+    button.onclick = () => {
+      const id = button.getAttribute('data-id');
+      const existing = getBookmarks();
+      if (existing.some(b => b.id === id)) {
+        alert("이미 북마크된 챕터입니다.");
         return;
       }
 
-      loading = true;
+      const name = prompt("이 북마크에 이름을 붙여주세요:");
+      if (!name) return;
 
-      setTimeout(() => {
-        const chapter = document.createElement('div');
-        chapter.classList.add('chapter');
-        chapter.id = `chapter-${chapterCount + 1}`;
-        chapter.setAttribute('tabindex', '-1');
+      existing.push({ id, title: name });
+      localStorage.setItem('bookmarks', JSON.stringify(existing));
+      renderBookmarks();
+    };
+  });
+}
 
-        chapter.innerHTML = `
-          <button class="bookmark-button" data-id="${chapterCount + 1}" aria-label="챕터 ${chapterCount + 1} 북마크 추가">북마크</button>
-          <p><strong>Chapter ${chapterCount + 1}</strong></p>
-          ${chaptersData[chapterCount - 1].map(p => `<p>${p}</p>`).join("")}
-        `;
+function getBookmarks() {
+  return JSON.parse(localStorage.getItem('bookmarks') || '[]');
+}
 
-        bookContainer.insertBefore(chapter, sentinel);
-        setTimeout(() => chapter.classList.add('visible'), 50);
+function renderBookmarks() {
+  const bookmarks = getBookmarks();
+  bookmarkList.innerHTML = '';
+  bookmarks.forEach(b => {
+    const li = document.createElement('li');
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = b.title;
+    nameSpan.title = `챕터 ${b.id}로 이동`;
+    nameSpan.onclick = () => {
+      const target = document.getElementById(`chapter-${b.id}`);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        target.focus({ preventScroll: true });
+      } else {
+        alert("해당 챕터는 아직 로드되지 않았어요. 조금만 더 스크롤 해주세요!");
+      }
+    };
 
-        chapterCount++;
-        loading = false;
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = "삭제";
+    deleteBtn.className = "delete-btn";
+    deleteBtn.setAttribute('aria-label', `${b.title} 북마크 삭제`);
+    deleteBtn.onclick = () => {
+      const updated = bookmarks.filter(item => item.id !== b.id);
+      localStorage.setItem('bookmarks', JSON.stringify(updated));
+      renderBookmarks();
+    };
 
-        attachBookmarkEvents();
-      }, 700);
-    }
+    li.appendChild(nameSpan);
+    li.appendChild(deleteBtn);
+    bookmarkList.appendChild(li);
+  });
+}
 
-    function attachBookmarkEvents() {
-      document.querySelectorAll('.bookmark-button').forEach(button => {
-        button.onclick = () => {
-          const id = button.getAttribute('data-id');
-          const existing = getBookmarks();
-          if (existing.some(b => b.id === id)) {
-            alert("이미 북마크된 챕터입니다.");
-            return;
-          }
+// 초기 실행: 기존 챕터는 1개만 먼저 노출 (첫 챕터)
+// 필요시 로드가 감지되며 나머지 챕터와 빈 입력 챕터가 순차 생성됨
+attachBookmarkEvents();
+renderBookmarks();
 
-          const name = prompt("이 북마크에 이름을 붙여주세요:");
-          if (!name) return;
-
-          existing.push({ id, title: name });
-          localStorage.setItem('bookmarks', JSON.stringify(existing));
-          renderBookmarks();
-        };
-      });
-    }
-
-    function getBookmarks() {
-      return JSON.parse(localStorage.getItem('bookmarks') || '[]');
-    }
-
-    function renderBookmarks() {
-      const bookmarks = getBookmarks();
-      bookmarkList.innerHTML = '';
-      bookmarks.forEach(b => {
-        const li = document.createElement('li');
-        const nameSpan = document.createElement('span');
-        nameSpan.textContent = b.title;
-        nameSpan.title = `챕터 ${b.id}로 이동`;
-        nameSpan.onclick = () => {
-          const target = document.getElementById(`chapter-${b.id}`);
-          if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            target.focus({preventScroll:true});
-          } else {
-            alert("해당 챕터는 아직 로드되지 않았어요. 조금만 더 스크롤 해주세요!");
-          }
-        };
-
-        const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = "삭제";
-        deleteBtn.className = "delete-btn";
-        deleteBtn.setAttribute('aria-label', `${b.title} 북마크 삭제`);
-        deleteBtn.onclick = () => {
-          const updated = bookmarks.filter(item => item.id !== b.id);
-          localStorage.setItem('bookmarks', JSON.stringify(updated));
-          renderBookmarks();
-        };
-
-        li.appendChild(nameSpan);
-        li.appendChild(deleteBtn);
-        bookmarkList.appendChild(li);
-      });
-    }
-
-    // 초기 실행
-    attachBookmarkEvents();
-    renderBookmarks();
   </script>
 </body>
 </html>
