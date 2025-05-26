@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>🍒 Cherry Wood Library - 가상 독서 공간</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo&display=swap');
+
+    /* 기본 스타일 */
+    body {
+      margin: 0; padding: 20px;
+      font-family: 'Nanum Myeongjo', serif;
+      background-color: #f7f3ee;
+      color: #3e2f1c;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #a65c4f;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      user-select: none;
+      text-shadow: 0 1px 1px #cdb79e;
+    }
+
+    /* 북마크 리스트 박스 */
+    .bookmark-list {
+      width: 620px;
+      background: #fffaf5;
+      border: 3px solid #a1866f;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(161,134,111,0.25);
+      padding: 15px 25px;
+      margin-bottom: 25px;
+      user-select: none;
+    }
+
+    .bookmark-list h3 {
+      margin: 0 0 10px 0;
+      color: #d94f4f;
+      letter-spacing: 1px;
+      border-bottom: 2px solid #d94f4f;
+      padding-bottom: 6px;
+    }
+
+    .bookmark-list ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+      max-height: 140px;
+      overflow-y: auto;
+    }
+
+    .bookmark-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 8px;
+      transition: background-color 0.25s ease;
+      cursor: default;
+      font-weight: 600;
+    }
+
+    .bookmark-list li:hover {
+      background-color: #f2dbdb;
+    }
+
+    .bookmark-list span {
+      flex-grow: 1;
+      color: #6e3a3a;
+      cursor: pointer;
+      user-select: text;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .delete-btn {
+      background: #d94f4f;
+      border: none;
+      color: white;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 14px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 13px;
+      transition: background-color 0.2s ease;
+    }
+
+    .delete-btn:hover {
+      background: #b83e3e;
+    }
+
+    /* 책 본문 컨테이너 */
+    .book-container {
+      width: 620px;
+      height: 430px;
+      background: #fffaf5;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(161,134,111,0.3);
+      overflow-y: scroll;
+      padding: 35px 45px;
+      font-size: 18px;
+      line-height: 1.9;
+      border: 5px solid #a1866f;
+      scroll-behavior: smooth;
+      user-select: text;
+      position: relative;
+    }
+
+    /* 커스텀 스크롤바 */
+    .book-container::-webkit-scrollbar {
+      width: 10px;
+    }
+    .book-container::-webkit-scrollbar-track {
+      background: #f7f3ee;
+      border-radius: 10px;
+    }
+    .book-container::-webkit-scrollbar-thumb {
+      background: #a1866f;
+      border-radius: 10px;
+      border: 2px solid #f7f3ee;
+    }
+    .book-container::-webkit-scrollbar-thumb:hover {
+      background: #d94f4f;
+    }
+
+    /* 챕터 카드 스타일 */
+    .chapter {
+      background: #fef9f3;
+      border: 2px solid #a1866f;
+      border-radius: 18px;
+      padding: 25px 28px 32px 28px;
+      margin-bottom: 42px;
+      box-shadow: 0 4px 8px rgba(161,134,111,0.15);
+      opacity: 0;
+      transform: translateY(15px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      position: relative;
+    }
+
+    .chapter.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* 챕터 제목 */
+    .chapter > p:first-child {
+      font-weight: 700;
+      font-size: 22px;
+      color: #6e4b32;
+      margin-bottom: 14px;
+      text-shadow: 0 1px 0 #d3bfa3;
+      user-select: none;
+    }
+
+    /* 북마크 버튼 */
+    .bookmark-button {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: #d94f4f;
+      border: none;
+      color: #fffaf5;
+      font-weight: 700;
+      padding: 8px 15px;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(217,79,79,0.6);
+      transition: background-color 0.25s ease;
+      font-size: 14px;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .bookmark-button:hover {
+      background-color: #b83e3e;
+      box-shadow: 0 3px 8px rgba(184,62,62,0.8);
+    }
+
+    .bookmark-button::before {
+      content: "📌";
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    /* 로딩 영역 */
+    .loading {
+      text-align: center;
+      color: #a1866f;
+      font-style: italic;
+      font-weight: 600;
+      user-select: none;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #a1866f;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      margin: 10px auto 15px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🍒Library🍒</h2>
+
+  <div class="bookmark-list">
+    <h3>📌 저장된 북마크</h3>
+    <ul id="bookmarkList"></ul>
+  </div>
+
+  <div class="book-container" id="bookContainer" tabindex="0" aria-label="가상 독서 공간">
+    <!-- 첫 챕터 -->
+    <div class="chapter visible" id="chapter-1" tabindex="-1">
+      <button class="bookmark-button" data-id="1" aria-label="챕터 1 북마크 추가">북마크</button>
+      <p><strong>Chapter 1</strong></p>
+      <p>세상에서 가장 어려운 일은 사람이 사람의 마음을 얻는 일이야.</p>
+
+      
+    </div>
+
+    <div class="loading" id="sentinel" aria-live="polite" aria-atomic="true">
+      <div class="spinner" role="status" aria-hidden="true"></div>
+      <p>페이지 불러오는 중...</p>
+    </div>
+  </div>
+
+  <script>
+    const chaptersData = [
+      ["넌 네가 길들인 것에 대해 언제까지나 책임을 져야 해."
+      ],
+
+      ["모든 어른들은 한때 어린이였다.<br> 그러나 그것을 기억하는 어른은 별로 없다.",
+        "-어린왕자"
+      ],
+
+      ["너는 나에게 이 세상에 단 하나뿐인 존재가 되는 거고, 나도 너에게 세상에 하나뿐인 존재가 되는 거야.",
+        "넌 네가 길들인 것에 대해 언제까지나 책임이 있어.",
+        "-사막여우"
+      ],
+
+      ["별들은 아름다워. 보이지 않는 한 송이 꽃 때문에.",
+      "사막이 아름다운 것은 어딘가에 샘을 감추고 있기 때문이야.",
+      "-어린왕자"
+  ],
+    ];
+
+    const bookContainer = document.getElementById('bookContainer');
+    const sentinel = document.getElementById('sentinel');
+    const bookmarkList = document.getElementById('bookmarkList');
+    let chapterCount = 1;
+    let loading = false;
+
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && !loading) {
+        loadNextChapter();
+      }
+    }, {
+      root: bookContainer,
+      threshold: 0.5
+    });
+
+    observer.observe(sentinel);
+
+    function loadNextChapter() {
+      if (chapterCount >= chaptersData.length + 1) {
+        sentinel.innerHTML = "<p>📘 더 이상 페이지가 없습니다.</p>";
+        observer.unobserve(sentinel);
+        return;
+      }
+
+      loading = true;
+
+      setTimeout(() => {
+        const chapter = document.createElement('div');
+        chapter.classList.add('chapter');
+        chapter.id = `chapter-${chapterCount + 1}`;
+        chapter.setAttribute('tabindex', '-1');
+
+        chapter.innerHTML = `
+          <button class="bookmark-button" data-id="${chapterCount + 1}" aria-label="챕터 ${chapterCount + 1} 북마크 추가">북마크</button>
+          <p><strong>Chapter ${chapterCount + 1}</strong></p>
+          ${chaptersData[chapterCount - 1].map(p => `<p>${p}</p>`).join("")}
+        `;
+
+        bookContainer.insertBefore(chapter, sentinel);
+        setTimeout(() => chapter.classList.add('visible'), 50);
+
+        chapterCount++;
+        loading = false;
+
+        attachBookmarkEvents();
+      }, 700);
+    }
+
+    function attachBookmarkEvents() {
+      document.querySelectorAll('.bookmark-button').forEach(button => {
+        button.onclick = () => {
+          const id = button.getAttribute('data-id');
+          const existing = getBookmarks();
+          if (existing.some(b => b.id === id)) {
+            alert("이미 북마크된 챕터입니다.");
+            return;
+          }
+
+          const name = prompt("이 북마크에 이름을 붙여주세요:");
+          if (!name) return;
+
+          existing.push({ id, title: name });
+          localStorage.setItem('bookmarks', JSON.stringify(existing));
+          renderBookmarks();
+        };
+      });
+    }
+
+    function getBookmarks() {
+      return JSON.parse(localStorage.getItem('bookmarks') || '[]');
+    }
+
+    function renderBookmarks() {
+      const bookmarks = getBookmarks();
+      bookmarkList.innerHTML = '';
+      bookmarks.forEach(b => {
+        const li = document.createElement('li');
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = b.title;
+        nameSpan.title = `챕터 ${b.id}로 이동`;
+        nameSpan.onclick = () => {
+          const target = document.getElementById(`chapter-${b.id}`);
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            target.focus({preventScroll:true});
+          } else {
+            alert("해당 챕터는 아직 로드되지 않았어요. 조금만 더 스크롤 해주세요!");
+          }
+        };
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = "삭제";
+        deleteBtn.className = "delete-btn";
+        deleteBtn.setAttribute('aria-label', `${b.title} 북마크 삭제`);
+        deleteBtn.onclick = () => {
+          const updated = bookmarks.filter(item => item.id !== b.id);
+          localStorage.setItem('bookmarks', JSON.stringify(updated));
+          renderBookmarks();
+        };
+
+        li.appendChild(nameSpan);
+        li.appendChild(deleteBtn);
+        bookmarkList.appendChild(li);
+      });
+    }
+
+    // 초기 실행
+    attachBookmarkEvents();
+    renderBookmarks();
+  </script>
+</body>
+</html>
