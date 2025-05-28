@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>야바위 게임</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="left">
+  <h1>숨은 고구마 찾기</h1>
+  <div class="game-container">
+    <div class="cup" id="cup0" onclick="chooseCup(0)" style="left: 0;">
+        <svg width="92" height="94" viewBox="0 0 92 94" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M39 33L0 16.5V76.5L39 93.5V33Z" fill="#E6A352"/>
+            <path d="M91.5 16.5L39 33V93.5L91.5 76.5V16.5Z" fill="#D59240"/>
+            <path d="M39 33L0 16.5L24 8.5L63 25.5L39 33Z" fill="#E6A453"/>
+            <path d="M63 25.5L24 8.5L51.5 0L91.5 16.5L63 25.5Z" fill="#E6A453"/>
+            <path d="M39 33L0 16.5L24 8.5L63 25.5L39 33Z" fill="#EDC28E"/>
+            <path d="M63 25.5L24 8.5L51.5 0L91.5 16.5L63 25.5Z" fill="#E8B06D"/>
+            </svg>
+    </div>
+    <div class="ball" id="ball0"></div>
+    <div class="cup" id="cup1" onclick="chooseCup(1)" style="left: 150px;">
+        <svg width="92" height="94" viewBox="0 0 92 94" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M39 33L0 16.5V76.5L39 93.5V33Z" fill="#E6A352"/>
+            <path d="M91.5 16.5L39 33V93.5L91.5 76.5V16.5Z" fill="#D59240"/>
+            <path d="M39 33L0 16.5L24 8.5L63 25.5L39 33Z" fill="#E6A453"/>
+            <path d="M63 25.5L24 8.5L51.5 0L91.5 16.5L63 25.5Z" fill="#E6A453"/>
+            <path d="M39 33L0 16.5L24 8.5L63 25.5L39 33Z" fill="#EDC28E"/>
+            <path d="M63 25.5L24 8.5L51.5 0L91.5 16.5L63 25.5Z" fill="#E8B06D"/>
+            </svg>
+
+    </div>
+    <div class="ball" id="ball1"></div>
+    <div class="cup" id="cup2" onclick="chooseCup(2)" style="left: 300px;">
+        <svg width="92" height="94" viewBox="0 0 92 94" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M39 33L0 16.5V76.5L39 93.5V33Z" fill="#E6A352"/>
+            <path d="M91.5 16.5L39 33V93.5L91.5 76.5V16.5Z" fill="#D59240"/>
+            <path d="M39 33L0 16.5L24 8.5L63 25.5L39 33Z" fill="#E6A453"/>
+            <path d="M63 25.5L24 8.5L51.5 0L91.5 16.5L63 25.5Z" fill="#E6A453"/>
+            <path d="M39 33L0 16.5L24 8.5L63 25.5L39 33Z" fill="#EDC28E"/>
+            <path d="M63 25.5L24 8.5L51.5 0L91.5 16.5L63 25.5Z" fill="#E8B06D"/>
+            </svg> 
+
+    </div>
+    <div class="ball" id="ball2"></div>
+  </div>
+  <div class="message" id="message">고구마의 위치를 잘 확인하세요...</div>
+  <button id="startButton" class="" onclick="startGame()">게임 시작</button>
+  <button id="resetButton" class="hidden" onclick="resetGame()">다시 시작</button>
+  
+</div>
+
+<div>
+  <img src="춘식이.webp" id="chunsikImage">
+</div>
+
+
+  <script src="야바위.js"></script>
+
+
+</body>
+</html>
+

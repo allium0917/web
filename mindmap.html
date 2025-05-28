@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>마인드맵</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9fafb;
+      overflow: hidden;
+    }
+    #mindmap-container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+    svg#line-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+    .node {
+      position: absolute;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 8px 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      cursor: grab;
+      user-select: none;
+    }
+    #add-node-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 10px 16px;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 10;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div id="mindmap-container">
+    <svg id="line-layer"></svg>
+    <div id="node-layer"></div>
+    <button id="add-node-btn">노드 추가</button>
+  </div>
+
+  <script>
+    const nodeLayer = document.getElementById('node-layer');
+    const svg = document.getElementById('line-layer');
+    const nodes = [];
+    const connections = [];
+
+    let nodeIdCounter = 0;
+
+    document.getElementById('add-node-btn').addEventListener('click', () => {
+      const id = `node-${nodeIdCounter++}`;
+      const node = document.createElement('div');
+      node.className = 'node';
+      node.innerText = '노드';
+      node.style.left = `${100 + nodeIdCounter * 50}px`;
+      node.style.top = `${100 + nodeIdCounter * 30}px`;
+      node.setAttribute('data-id', id);
+      makeDraggable(node);
+      nodeLayer.appendChild(node);
+      nodes.push({ id, element: node });
+
+      if (nodes.length > 1) {
+        connections.push([nodes[0].id, id]);
+        drawLines();
+      }
+    });
+
+    function drawLines() {
+      svg.innerHTML = '';
+      connections.forEach(([fromId, toId]) => {
+        const from = document.querySelector(`[data-id='${fromId}']`);
+        const to = document.querySelector(`[data-id='${toId}']`);
+
+        const x1 = from.offsetLeft + from.offsetWidth / 2;
+        const y1 = from.offsetTop + from.offsetHeight / 2;
+        const x2 = to.offsetLeft + to.offsetWidth / 2;
+        const y2 = to.offsetTop + to.offsetHeight / 2;
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', x1);
+        line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2);
+        line.setAttribute('y2', y2);
+        line.setAttribute('stroke', '#9ca3af');
+        line.setAttribute('stroke-width', '2');
+        svg.appendChild(line);
+      });
+    }
+
+    function makeDraggable(el) {
+      let offsetX, offsetY;
+      el.addEventListener('mousedown', (e) => {
+        offsetX = e.offsetX;
+        offsetY = e.offsetY;
+        const onMouseMove = (e) => {
+          el.style.left = `${e.pageX - offsetX}px`;
+          el.style.top = `${e.pageY - offsetY}px`;
+          drawLines();
+        };
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', () => {
+          document.removeEventListener('mousemove', onMouseMove);
+        }, { once: true });
+      });
+    }
+  </script>
+</body>
+</html>

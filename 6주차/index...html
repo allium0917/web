@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Document</title>
+<style>
+.alert-box {
+background-color: skyblue;
+padding: 20px;
+color: white;
+border-radius: 5px;
+display: none;
+position: relative;
+}
+</style>
+</head>
+<body>
+<div class="alert-box" id="a">아이디 입력 <br> <button onclick="closebox1()" id ="a">닫기</button> </div>
+<div class="alert-box" id="b">비밀번호 입력 <br> <button onclick="closebox2()" id ="b">닫기</button> </div>
+<button onclick="idbox()">버튼1</button> <button onclick="pwbox()">버튼2</button>
+
+
+<script>
+function idbox(){
+document.getElementById('a').style.display = 'block';
+}
+function closebox1(){
+document.getElementById('a').style.display = 'none';
+}
+function pwbox(){
+document.getElementById('b').style.display = 'block';
+}
+function closebox2(){
+document.getElementById('b').style.display = 'none';
+}
+</script>
+</body>
+</html>

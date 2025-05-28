@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .alert-box {
+            background-color: skyblue;
+            padding: 20px;
+            color: white;
+            border-radius: 5px;
+            display: none;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="alert-box" id="a">알림창</div>
+    <button onclick="button()">열기 / 닫기</button>
+
+    <script>
+        function button(){
+            const alertBox = document.getElementById('a');
+            if (alertBox.style.display == 'block') {
+                alertBox.style.display = 'none';
+            } else {
+                alertBox.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>

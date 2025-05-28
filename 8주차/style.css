@@ -1,0 +1,52 @@
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #fafafa;
+  font-family: Arial, sans-serif;
+}
+
+.carousel {
+  width: 100%;
+  max-width: 1000px;
+  height: 600px;
+  overflow: hidden;
+  border: 3px solid #333;
+  border-radius: 8px;
+  margin: 20px 0;
+  position: relative;
+}
+
+.track {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.4s ease-in-out;
+}
+
+.slide {
+  width: 100%;
+  height: 600px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: black;
+  flex-grow: 1;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 5px;
+}
+
+.progress-bar {
+  width: 0%;
+  height: 100%;
+  background: #aa82bf;
+  transition: width 0.1s linear;
+}

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>저건 내 꺼야 !!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Jua', sans-serif;
+      background-color: #ebe2d2;
+      text-align: center;
+      position: relative;
+      opacity: 0;
+      transition: opacity 0.3s ease-in;
+    }
+
+    body.visible {
+      opacity: 1;
+    }
+
+    #top-image, #park-image, h1, #next-button {
+      opacity: 0;
+      transition: opacity 0.5s ease-in;
+    }
+
+    .fade-in {
+      opacity: 1 !important;
+    }
+
+    #top-image {
+      width: 500px;
+      border: 8px solid #e8bb68;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      margin: 150px;
+      background-color: #f8f8f8;
+      position: absolute;
+      top: 0;
+      left: 22.5%;
+    }
+
+    #park-image {
+      width: 250px;
+      margin-left: 100px;
+      position: absolute;
+      top: 300px;
+      left: 30px;
+    }
+
+    h1 {
+      font-size: 5em;
+      color: rgb(122, 98, 98);
+      margin: 80px;
+      margin-top: 40px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 2em;
+      font-family: 'Jua', sans-serif;
+      color: gray;
+      background-color: transparent;
+      border: 2px solid gray;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 50px;
+      position: absolute;
+      bottom: 47px;
+      right: 20px;
+    }
+  </style>
+</head>
+<body>
+  <img id="top-image" src="img.gif" alt="고구마 그림">
+  <h1>저건 내 꺼야!!</h1>
+  <button id="next-button" onclick="goToNextPage()">다음 -></button>
+  <img id="park-image" src="ball.png" alt="또구마 그림">
+
+  <script>
+    window.onload = () => {
+      document.body.classList.add("visible");
+      document.getElementById("top-image").classList.add("fade-in");
+      document.getElementById("park-image").classList.add("fade-in");
+      document.getElementById("next-button").classList.add("fade-in");
+      document.querySelector("h1").classList.add("fade-in");
+    };
+
+    function goToNextPage() {
+      document.body.classList.remove("visible");
+      document.body.style.transition = "opacity 0.3s ease-out";
+      document.body.style.opacity = 0;
+      setTimeout(() => {
+        window.location.href = "2next.html";
+      }, 300);
+    }
+  </script>
+</body>
+</html>
