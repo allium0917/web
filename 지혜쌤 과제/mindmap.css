@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Bagel+Fat+One&display=swap');
+  
+* {
+font-family: "Bagel Fat One", system-ui;
+letter-spacing: 1.5px;
+word-spacing: 3px;
+}
+
+
+body {
+  margin: 0;
+  background: #f9fafb;
+  overflow: hidden;
+}
+#mindmap-container {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+
+  margin-left: 0 auto;
+}
+svg#line-layer {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+.node {
+  position: absolute;
+  background: #fff;
+  border: 3px solid #717171;
+  border-radius: 15px;
+  padding: 15px 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  cursor: grab;
+  user-select: none;
+  min-width: 50px;
+  white-space: nowrap;
+
+  }
+.node.editing {
+  cursor: text;
+  user-select: text;
+  padding: 15px 20px;
+}
+#add-node-btn, #connect-mode-btn, #del-node-btn {
+  position: absolute;
+  top: 700px;
+  padding: 10px 16px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 10;
+  font-size: 14px;
+}
+#add-node-btn { left: 20px; }
+#del-node-btn { left: 300px;}
+#connect-mode-btn { left: 145px; }
+#connect-mode-btn.active {
+  background-color: #1e1042;
+}
+#status {
+  position: absolute;
+  top: 60px;
+  left: 20px;
+  font-size: 14px;
+  color: #4b5563;
+  user-select: none;
+  z-index: 10;
+}
