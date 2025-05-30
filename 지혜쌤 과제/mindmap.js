@@ -59,10 +59,7 @@ node.addEventListener('click', (e) => {
     drawLines();
 
     // 삭제 모드 종료
-    deleteMode = false;
-    updateStatus('');
-    delBtn.innerText = '노드 삭제';
-    delBtn.style.backgroundColor = '#3b82f6';
+
     return;
   }
 
