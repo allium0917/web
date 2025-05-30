@@ -55,17 +55,15 @@ node.addEventListener('click', (e) => {
     // 노드 제거
     node.remove();
     nodes = nodes.filter(n => n.id !== idToDelete);
-
     drawLines();
 
     // 삭제 모드 종료
-
     return;
   }
 
   if (connectMode) {
     // 연결 모드일 때 처리
-    if (!connectFromNode) {
+    if (!connectFromNode && delBtn?.innerText === '노드 삭제') {
       connectFromNode = node;
       updateStatus(`연결 시작: ${connectFromNode.innerText}`);
       node.style.borderColor = '#2563eb';
