@@ -7,7 +7,6 @@ word-spacing: 3px;
 text-align: center;
 }
 
-
 body {
   margin: 0;
   background: #f9fafb;
@@ -55,9 +54,10 @@ svg#line-layer {
   z-index: 10;
   font-size: 14px;
 }
-#add-node-btn { left: 20px; }
-#del-node-btn { left: 300px;}
-#connect-mode-btn { left: 145px; }
+#add-node-btn { left: 50vh; }
+#connect-mode-btn { left: 70vh; }
+#del-node-btn { left: 95vh; }
+
 #connect-mode-btn.active {
   background-color: #1e1042;
 }

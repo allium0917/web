@@ -10,6 +10,10 @@
   let connectMode = false;
   let connectFromNode = null;
 
+  let activemode = null;
+
+  //activemode로 전체적 수정하기 (중복버튼 불가하게)
+
   document.getElementById('add-node-btn').addEventListener('click', () => {
     const id = `node-${nodeIdCounter++}`;
     const node = document.createElement('div');
@@ -18,12 +22,14 @@
     node.style.left = `${100 + nodeIdCounter * 50}px`;
     node.style.top = `${100 + nodeIdCounter * 30}px`;
     node.setAttribute('data-id', id);
+    
 
 let deleteMode = false;
 
 const delBtn = document.getElementById('del-node-btn');
 delBtn.addEventListener('click', () => {
   deleteMode = !deleteMode;
+
   if (deleteMode) {
     updateStatus('삭제할 노드를 클릭하세요.');
     delBtn.innerText = '삭제 모드 ON';
@@ -63,7 +69,7 @@ node.addEventListener('click', (e) => {
 
   if (connectMode) {
     // 연결 모드일 때 처리
-    if (!connectFromNode && delBtn?.innerText === '노드 삭제') {
+    if (!connectFromNode ) {
       connectFromNode = node;
       updateStatus(`연결 시작: ${connectFromNode.innerText}`);
       node.style.borderColor = '#2563eb';
@@ -198,3 +204,5 @@ node.addEventListener('click', (e) => {
     node.addEventListener('blur', finishEditing);
     node.addEventListener('keydown', onKeyDown);
   }
+
+  //수정중 - 버튼 중복 작용 불가하게 만들기
