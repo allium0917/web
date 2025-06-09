@@ -204,5 +204,3 @@ node.addEventListener('click', (e) => {
     node.addEventListener('blur', finishEditing);
     node.addEventListener('keydown', onKeyDown);
   }
-
-  //수정중 - 버튼 중복 작용 불가하게 만들기
