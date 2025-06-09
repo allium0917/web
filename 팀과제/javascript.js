@@ -8,26 +8,18 @@ const cupElements = [
   document.getElementById('cup2'),
 ];
 
-
+// 공 위치를 컵 위치에 맞춰 조정
 function positionBall(index) {
   const cup = cupElements[index];
   const ball = document.getElementById("ball" + index);
   const cupLeft = parseInt(cup.style.left);
-  ball.style.left = (cupLeft + 50) + "px"; 
-}
-
-function startGame() {
-  document.getElementById("startButton").classList.add("hidden");   
-  document.getElementById("resetButton").classList.add("hidden");   
-  resetGame();
+  ball.style.left = (cupLeft + 50) + "px"; // 컵 중앙
 }
 
 function resetGame() {
-  document.getElementById("resetButton").classList.add("hidden"); 
-  document.getElementById("message").textContent = "고구마의 위치를 잘 확인하세요...";
+  document.getElementById("message").textContent = "공 위치를 확인하세요...";
   document.querySelectorAll('.ball').forEach(ball => ball.style.display = 'none');
   cupElements.forEach(cup => cup.classList.remove('lifted'));
-  document.getElementById("chunsikImage").src = "춘식이.webp"; 
   gameEnded = false;
   canClick = false;
 
@@ -44,25 +36,23 @@ function resetGame() {
     cup.classList.remove('lifted');
 
     setTimeout(() => {
-      document.getElementById("message").textContent = "어디에 있을까요?...";
-      shuffleCups(() => {
-        document.getElementById("resetButton").classList.remove("hidden");
-      });
+      document.getElementById("message").textContent = "컵을 섞는 중입니다...";
+      shuffleCups();
     }, 500);
   }, 1000);
 }
 
-function shuffleCups(callback) {
+function shuffleCups() {
   const positions = [0, 150, 300];
   let currentOrder = [0, 1, 2];
-  let shuffleCount = 10;
-  let delay = 200;
+
+  let shuffleCount = 5;
+  let delay = 600;
 
   const shuffleStep = (i) => {
     if (i >= shuffleCount) {
-      document.getElementById("message").textContent = "상자 속 고구마를 찾아보세요";
+      document.getElementById("message").textContent = "공이 숨겨졌습니다! 컵을 선택하세요.";
       canClick = true;
-      if (callback) callback(); 
       return;
     }
 
@@ -90,26 +80,44 @@ function chooseCup(index) {
   const selectedCup = cupElements[index];
   selectedCup.classList.add('lifted');
 
-  const correctCup = cupElements[ballPosition];
   const ball = document.getElementById("ball" + ballPosition);
-  const chunsikImg = document.getElementById("chunsikImage");
-
-  positionBall(ballPosition);
+  positionBall(ballPosition); // 혹시 섞인 후 위치가 바뀌었을 경우
   ball.style.display = "block";
 
   if (index === ballPosition) {
-    document.getElementById("message").textContent = "춘식이가 고구마를 먹을 수 있겠어요!";
-    chunsikImg.src = "성공.png";
+    document.getElementById("message").textContent = "정답입니다! 🎉";
   } else {
-    document.getElementById("message").textContent = "춘식이는 다음 기회를 노려야겠어요...";
-    chunsikImg.src = "실패.png";
-    if (!correctCup.classList.contains('lifted')) {
-      setTimeout(() => {
-        correctCup.classList.add('lifted');
-      }, 0);
-    }
+    document.getElementById("message").textContent = "틀렸습니다! 😢";
   }
 
-  document.getElementById("resetButton").classList.remove("hidden");
   gameEnded = true;
 }
+
+function chooseCup(index) {
+    if (gameEnded || !canClick) return;
+  
+    const selectedCup = cupElements[index];
+    selectedCup.classList.add('lifted');
+  
+    const correctCup = cupElements[ballPosition];
+    const ball = document.getElementById("ball" + ballPosition);
+    positionBall(ballPosition);
+    ball.style.display = "block";
+  
+    if (index === ballPosition) {
+      document.getElementById("message").textContent = "정답입니다! 🎉";
+    } else {
+      document.getElementById("message").textContent = "틀렸습니다! 😢 정답은 여기에 있었어요.";
+      if (!correctCup.classList.contains('lifted')) {
+        // 정답 컵도 들어올림
+        setTimeout(() => {
+          correctCup.classList.add('lifted');
+        }, 500); // 선택 컵보다 약간 늦게
+      }
+    }
+  
+    gameEnded = true;
+  }
+  
+
+window.onload = resetGame;
